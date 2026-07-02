@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Меню | Ресторан</title>
-    <!-- PWA manifest (встроенный base64) -->
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogItCc0LXQvdGOIiwKICAic2hvcnRfbmFtZSI6ICLQnNC10L3RjiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmFmOWY3IiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNjQwMCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJd01EQXhaQ0lnYUdsd1BTSXdNREF4WkNJZ2FHVnBaMmgwUFNJd01EQXhaQ0lnY0dGemNEMGlZVzUxYkd3aUlIVnVhWEo1UFNKb2RIUndPaTh2ZDNkM0xuY3pMbTl5Wnk4eU1EQXdMM04yWnlJZ2VHMXNibk02SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0S1BDOXpkbWMrIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
     <meta name="theme-color" content="#ff6400">
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --bg: #faf9f7;
@@ -43,7 +44,6 @@
             max-width: 1200px; margin: 0 auto; min-height: 100vh;
             padding: 1rem 1.5rem;
         }
-        /* header */
         .top-bar {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;
@@ -54,10 +54,9 @@
             background: var(--card); border: 1px solid var(--border); border-radius: 30px;
             width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
             font-size: 1.3rem; cursor: pointer; transition: 0.2s; color: var(--text);
-            position: relative;
+            text-decoration: none;
         }
         .icon-btn:active { background: var(--primary); color: white; }
-        /* Search & filters */
         .search-area {
             background: var(--card); border-radius: var(--radius); padding: 0.8rem 1rem;
             margin-bottom: 1rem; box-shadow: var(--shadow);
@@ -79,7 +78,6 @@
             padding: 0.5rem 0.8rem; border-radius: 10px; cursor: pointer; font-size: 0.8rem;
         }
         .clear-btn:active { background: var(--primary-light); }
-        /* Tabs */
         .tabs {
             display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem;
             margin-bottom: 1rem; scrollbar-width: none;
@@ -91,7 +89,6 @@
             font-weight: 500; font-size: 0.9rem; transition: 0.2s; color: var(--text);
         }
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-        /* Menu grid */
         .menu-grid {
             display: grid; gap: 1rem;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -123,7 +120,6 @@
         .item-price { font-weight: 800; color: var(--primary); font-size: 1.2rem; }
         .item-weight { font-size: 0.8rem; color: var(--text-light); background: var(--bg); padding: 0.2rem 0.5rem; border-radius: 8px; }
         .empty-state { text-align: center; padding: 3rem; color: var(--text-light); grid-column: 1 / -1; }
-        /* Modal (detail & QR) */
         .modal {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
@@ -163,16 +159,14 @@
 </head>
 <body>
     <div class="container">
-        <!-- Верхняя панель -->
         <div class="top-bar">
             <div class="restaurant-name">🍽️ Меню</div>
             <div class="header-actions">
                 <button class="icon-btn" id="themeBtn" title="Тёмная тема">🌓</button>
+                <button class="icon-btn" id="pdfMenuBtn" title="Скачать меню в PDF">🖨️</button>
                 <button class="icon-btn" id="qrBtn" title="QR‑код меню">📱</button>
             </div>
         </div>
-
-        <!-- Поиск и фильтры -->
         <div class="search-area">
             <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск блюда или цены...">
             <div class="filter-group">
@@ -181,17 +175,12 @@
                 <button class="clear-btn" id="clearFilters">Сбросить</button>
             </div>
         </div>
-
-        <!-- Категории -->
         <div class="tabs" id="tabsContainer"></div>
-
-        <!-- Сетка блюд -->
         <div class="menu-grid" id="menuGrid"></div>
     </div>
 
-    <!-- Модальное окно блюда -->
     <div class="modal" id="detailModal">
-        <div class="modal-card" id="modalCard">
+        <div class="modal-card">
             <button class="close-btn" id="closeDetailModal">✕</button>
             <div class="modal-img" id="modalImg"></div>
             <div class="modal-name" id="modalName"></div>
@@ -203,7 +192,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно QR -->
     <div class="modal" id="qrModal">
         <div class="modal-card">
             <button class="close-btn" id="closeQrModal">✕</button>
@@ -212,15 +200,15 @@
                 <canvas id="qrCanvas"></canvas>
             </div>
             <p style="font-size:0.85rem; color:var(--text-light); margin-top:0.5rem;">
-                Нажмите и удерживайте, чтобы сохранить
+                Нажмите и удерживайте, чтобы сохранить PNG
             </p>
             <div class="qr-actions">
-                <button id="downloadQr">Скачать</button>
+                <button id="downloadPng">Скачать PNG</button>
+                <button id="downloadPdfQr">Скачать PDF</button>
             </div>
         </div>
     </div>
 
-    <!-- ========== ДАННЫЕ МЕНЮ (редактируй здесь) ========== -->
     <script>
         const menuData = {
             "restaurantName": "Мой ресторан",
@@ -246,7 +234,7 @@
 
     <script>
         (function() {
-            // Элементы
+            // Existing DOM elements...
             const searchInput = document.getElementById('searchInput');
             const maxPriceInput = document.getElementById('maxPriceInput');
             const clearBtn = document.getElementById('clearFilters');
@@ -259,13 +247,15 @@
             const detailModal = document.getElementById('detailModal');
             const closeDetailBtn = document.getElementById('closeDetailModal');
             const closeQrBtn = document.getElementById('closeQrModal');
-            const downloadQrBtn = document.getElementById('downloadQr');
+            const downloadPngBtn = document.getElementById('downloadPng');
+            const downloadPdfQrBtn = document.getElementById('downloadPdfQr');
+            const pdfMenuBtn = document.getElementById('pdfMenuBtn');
 
             let currentCategory = 'all';
             let searchTerm = '';
             let maxPrice = Infinity;
 
-            // Тёмная тема
+            // Theme
             function setTheme(isDark) {
                 document.body.classList.toggle('dark', isDark);
                 localStorage.setItem('menuTheme', isDark ? 'dark' : 'light');
@@ -273,14 +263,12 @@
             setTheme(localStorage.getItem('menuTheme') === 'dark');
             themeBtn.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
 
-            // Подсветка
             function highlight(text, term) {
                 if (!term.trim()) return text;
                 const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
                 return text.replace(regex, '<span class="highlight">$1</span>');
             }
 
-            // Фильтрация
             function getFilteredItems() {
                 let items = menuData.items;
                 if (currentCategory !== 'all') {
@@ -288,8 +276,8 @@
                 }
                 const term = searchTerm.trim().toLowerCase();
                 if (term) {
-                    items = items.filter(item => 
-                        item.name.toLowerCase().includes(term) || 
+                    items = items.filter(item =>
+                        item.name.toLowerCase().includes(term) ||
                         (item.desc && item.desc.toLowerCase().includes(term)) ||
                         String(item.price).includes(term)
                     );
@@ -300,7 +288,6 @@
                 return items;
             }
 
-            // Рендер табов
             function renderTabs() {
                 tabsContainer.innerHTML = `<div class="tab ${currentCategory==='all'?'active':''}" data-cat="all">Все</div>`;
                 menuData.categories.forEach(cat => {
@@ -322,7 +309,6 @@
                 });
             }
 
-            // Рендер карточек
             function renderItems() {
                 const items = getFilteredItems();
                 menuGrid.innerHTML = '';
@@ -333,9 +319,9 @@
                 items.forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'menu-item';
-                    const imgContent = item.emoji 
+                    const imgContent = item.emoji
                         ? `<div class="item-img emoji-placeholder">${item.emoji}</div>`
-                        : (item.img ? `<img src="${item.img}" class="item-img" loading="lazy" alt="${item.name}">` 
+                        : (item.img ? `<img src="${item.img}" class="item-img" loading="lazy" alt="${item.name}">`
                                      : `<div class="item-img emoji-placeholder">🍽️</div>`);
                     card.innerHTML = `
                         ${imgContent}
@@ -353,11 +339,10 @@
                 });
             }
 
-            // Детали блюда
             function showDetail(item) {
-                document.getElementById('modalImg').innerHTML = item.emoji 
-                    ? `<div style="font-size:5rem;">${item.emoji}</div>` 
-                    : (item.img ? `<img src="${item.img}" style="width:100%;height:200px;object-fit:cover;border-radius:16px;">` 
+                document.getElementById('modalImg').innerHTML = item.emoji
+                    ? `<div style="font-size:5rem;">${item.emoji}</div>`
+                    : (item.img ? `<img src="${item.img}" style="width:100%;height:200px;object-fit:cover;border-radius:16px;">`
                                  : `<div style="font-size:5rem;">🍽️</div>`);
                 document.getElementById('modalName').textContent = item.name;
                 document.getElementById('modalDesc').textContent = item.desc || '';
@@ -370,7 +355,7 @@
             closeDetailBtn.addEventListener('click', hideDetail);
             detailModal.addEventListener('click', (e) => { if (e.target === detailModal) hideDetail(); });
 
-            // QR-код
+            // QR generation
             function generateQR() {
                 const url = window.location.href.split('?')[0];
                 const img = new Image();
@@ -394,15 +379,65 @@
             closeQrBtn.addEventListener('click', () => qrModal.classList.remove('active'));
             qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('active'); });
 
-            // Скачать QR
-            downloadQrBtn.addEventListener('click', () => {
+            // Download QR as PNG
+            downloadPngBtn.addEventListener('click', () => {
                 const link = document.createElement('a');
                 link.download = 'menu-qr.png';
                 link.href = qrCanvas.toDataURL('image/png');
                 link.click();
             });
 
-            // Обработчики фильтров
+            // Download QR as PDF (using jsPDF)
+            downloadPdfQrBtn.addEventListener('click', () => {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgData = qrCanvas.toDataURL('image/png');
+                const imgWidth = 80; // mm
+                const imgHeight = 80;
+                const x = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
+                const y = 50;
+                pdf.setFontSize(16);
+                pdf.text('QR-код меню', x, 40);
+                pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+                pdf.setFontSize(10);
+                pdf.text('Отсканируйте, чтобы открыть меню', x, y + imgHeight + 10);
+                pdf.save('qr-menu.pdf');
+            });
+
+            // Download full menu as PDF
+            pdfMenuBtn.addEventListener('click', () => {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const margin = 15;
+                let y = margin;
+                const lineHeight = 7;
+                pdf.setFontSize(18);
+                pdf.text(menuData.restaurantName || 'Меню', margin, y);
+                y += 12;
+                pdf.setFontSize(11);
+                const items = getFilteredItems();
+                items.forEach((item, idx) => {
+                    // Check page break
+                    if (y > 270) {
+                        pdf.addPage();
+                        y = margin;
+                    }
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(`${item.name}`, margin, y);
+                    const priceWidth = pdf.getTextWidth(`${item.price} ₸`);
+                    pdf.text(`${item.price} ₸`, pdf.internal.pageSize.getWidth() - margin - priceWidth, y);
+                    y += lineHeight;
+                    if (item.desc) {
+                        pdf.setFont(undefined, 'normal');
+                        pdf.text(item.desc, margin, y);
+                        y += lineHeight;
+                    }
+                    y += 3; // spacing
+                });
+                pdf.save('menu.pdf');
+            });
+
+            // Filters
             searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; renderItems(); });
             maxPriceInput.addEventListener('input', (e) => {
                 const val = parseInt(e.target.value);
@@ -425,7 +460,7 @@
 
             // PWA
             if ('serviceWorker' in navigator) {
-                const swCode = `const C='menu-v3';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
+                const swCode = `const C='menu-v4';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
                 const blob = new Blob([swCode], {type:'application/javascript'});
                 navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
             }
