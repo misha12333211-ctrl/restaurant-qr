@@ -38,10 +38,14 @@
             transition: background 0.3s, color 0.3s;
             -webkit-tap-highlight-color: transparent;
             line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         .container {
-            max-width: 1200px; margin: 0 auto; min-height: 100vh;
+            max-width: 1200px; margin: 0 auto; width: 100%;
             padding: 1rem 1.5rem;
+            flex: 1;
         }
         .top-bar {
             display: flex; justify-content: space-between; align-items: center;
@@ -154,6 +158,16 @@
             background: var(--primary); color: white; border: none; padding: 0.5rem 1rem;
             border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
         }
+        /* Footer */
+        .footer {
+            margin-top: 2rem; padding: 1.5rem 1rem;
+            background: var(--card); border-radius: var(--radius);
+            box-shadow: var(--shadow); text-align: center; font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        .footer p { margin: 0.3rem 0; }
+        .footer .address { font-weight: 500; color: var(--text); }
+        .footer .update-date { font-size: 0.8rem; color: var(--text-light); }
         /* Стили для печати */
         @media print {
             .top-bar, .search-area, .tabs, .icon-btn, .qr-actions, .modal, button, .header-actions {
@@ -163,6 +177,7 @@
             .container { padding: 0; max-width: 100%; }
             .menu-grid { grid-template-columns: 1fr; gap: 0.5rem; }
             .menu-item { box-shadow: none; border-bottom: 1px solid #ddd; page-break-inside: avoid; }
+            .footer { box-shadow: none; border-top: 1px solid #ddd; }
         }
     </style>
 </head>
@@ -187,6 +202,10 @@
         <div class="tabs" id="tabsContainer"></div>
         <div class="menu-grid" id="menuGrid"></div>
     </div>
+
+    <footer class="footer" id="footerInfo">
+        <!-- Заполняется из menuData динамически -->
+    </footer>
 
     <div class="modal" id="detailModal">
         <div class="modal-card">
@@ -238,7 +257,10 @@
                 { "id":7, "category":"drinks", "name":"Эспрессо", "price":600, "weight":"30 мл", "desc":"Крепкий ароматный кофе", "emoji":"☕" },
                 { "id":8, "category":"drinks", "name":"Лимонад домашний", "price":800, "weight":"300 мл", "desc":"Освежающий, с мятой и лаймом", "emoji":"🍹" },
                 { "id":9, "category":"hot", "name":"Суп-пюре грибной", "price":1100, "weight":"300 мл", "desc":"Из белых грибов со сливками", "emoji":"🍄" }
-            ]
+            ],
+            "address": "ул. Пушкина, 10, Ереван, Армения",
+            "phone": "+374 99 123 456",
+            "updatedDate": "2026-07-02" // дата обновления меню
         };
     </script>
 
@@ -259,6 +281,7 @@
             const downloadPngBtn = document.getElementById('downloadPng');
             const downloadPdfQrBtn = document.getElementById('downloadPdfQr');
             const printBtn = document.getElementById('printBtn');
+            const footerInfo = document.getElementById('footerInfo');
 
             let currentCategory = 'all';
             let searchTerm = '';
@@ -402,7 +425,6 @@
                 const imgHeight = 80;
                 const x = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
                 const y = 50;
-                // Только изображение, без текста
                 pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
                 pdf.setFontSize(10);
                 pdf.text('Scan to open the menu', x, y + imgHeight + 10);
@@ -414,7 +436,7 @@
                 window.print();
             });
 
-            // Filters
+            // Фильтры
             searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; renderItems(); });
             maxPriceInput.addEventListener('input', (e) => {
                 const val = parseInt(e.target.value);
@@ -430,14 +452,27 @@
                 renderAll();
             });
 
+            // Заполнение футера
+            function renderFooter() {
+                const { address, phone, updatedDate } = menuData;
+                const year = new Date().getFullYear();
+                footerInfo.innerHTML = `
+                    <p class="address">📍 ${address || ''}</p>
+                    ${phone ? `<p>📞 ${phone}</p>` : ''}
+                    <p>🕒 Обновлено: ${updatedDate || 'не указано'}</p>
+                    <p class="update-date">© ${year} ${menuData.restaurantName}. Все права защищены.</p>
+                `;
+            }
+
             function renderAll() {
                 renderTabs();
                 renderItems();
+                renderFooter();
             }
 
             // PWA
             if ('serviceWorker' in navigator) {
-                const swCode = `const C='menu-v5';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
+                const swCode = `const C='menu-v6';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
                 const blob = new Blob([swCode], {type:'application/javascript'});
                 navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
             }
