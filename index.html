@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Меню | Ресторан</title>
+    <!-- PWA manifest (base64) -->
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogItCc0LXQvdGOIiwKICAic2hvcnRfbmFtZSI6ICLQnNC10L3RjiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmFmOWY3IiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNjQwMCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJd01EQXhaQ0lnYUdsd1BTSXdNREF4WkNJZ2FHVnBaMmgwUFNJd01EQXhaQ0lnY0dGemNEMGlZVzUxYkd3aUlIVnVhWEo1UFNKb2RIUndPaTh2ZDNkM0xuY3pMbTl5Wnk4eU1EQXdMM04yWnlJZ2VHMXNibk02SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0S1BDOXpkbWMrIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
     <meta name="theme-color" content="#ff6400">
-    <!-- jsPDF for PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --bg: #faf9f7;
@@ -155,6 +154,16 @@
             background: var(--primary); color: white; border: none; padding: 0.5rem 1rem;
             border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
         }
+        /* Стили для печати */
+        @media print {
+            .top-bar, .search-area, .tabs, .icon-btn, .qr-actions, .modal, button, .header-actions {
+                display: none !important;
+            }
+            body { background: white; color: black; }
+            .container { padding: 0; max-width: 100%; }
+            .menu-grid { grid-template-columns: 1fr; gap: 0.5rem; }
+            .menu-item { box-shadow: none; border-bottom: 1px solid #ddd; page-break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
@@ -163,7 +172,7 @@
             <div class="restaurant-name">🍽️ Меню</div>
             <div class="header-actions">
                 <button class="icon-btn" id="themeBtn" title="Тёмная тема">🌓</button>
-                <button class="icon-btn" id="pdfMenuBtn" title="Скачать меню в PDF">🖨️</button>
+                <button class="icon-btn" id="printBtn" title="Распечатать меню">🖨️</button>
                 <button class="icon-btn" id="qrBtn" title="QR‑код меню">📱</button>
             </div>
         </div>
@@ -195,20 +204,21 @@
     <div class="modal" id="qrModal">
         <div class="modal-card">
             <button class="close-btn" id="closeQrModal">✕</button>
-            <h3 style="margin-bottom:1rem;">QR‑код меню</h3>
+            <h3 style="margin-bottom:1rem;">Menu QR Code</h3>
             <div class="qr-container">
                 <canvas id="qrCanvas"></canvas>
             </div>
             <p style="font-size:0.85rem; color:var(--text-light); margin-top:0.5rem;">
-                Нажмите и удерживайте, чтобы сохранить PNG
+                Long press to save as image
             </p>
             <div class="qr-actions">
-                <button id="downloadPng">Скачать PNG</button>
-                <button id="downloadPdfQr">Скачать PDF</button>
+                <button id="downloadPng">Download PNG</button>
+                <button id="downloadPdfQr">Download PDF</button>
             </div>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         const menuData = {
             "restaurantName": "Мой ресторан",
@@ -234,7 +244,6 @@
 
     <script>
         (function() {
-            // Existing DOM elements...
             const searchInput = document.getElementById('searchInput');
             const maxPriceInput = document.getElementById('maxPriceInput');
             const clearBtn = document.getElementById('clearFilters');
@@ -249,13 +258,12 @@
             const closeQrBtn = document.getElementById('closeQrModal');
             const downloadPngBtn = document.getElementById('downloadPng');
             const downloadPdfQrBtn = document.getElementById('downloadPdfQr');
-            const pdfMenuBtn = document.getElementById('pdfMenuBtn');
+            const printBtn = document.getElementById('printBtn');
 
             let currentCategory = 'all';
             let searchTerm = '';
             let maxPrice = Infinity;
 
-            // Theme
             function setTheme(isDark) {
                 document.body.classList.toggle('dark', isDark);
                 localStorage.setItem('menuTheme', isDark ? 'dark' : 'light');
@@ -368,7 +376,7 @@
                     ctx.drawImage(img, 0, 0);
                 };
                 img.onerror = () => {
-                    qrCanvas.parentElement.innerHTML = '<p style="color:red;">Не удалось загрузить QR-код</p>';
+                    qrCanvas.parentElement.innerHTML = '<p style="color:red;">Could not load QR code</p>';
                 };
             }
 
@@ -379,7 +387,6 @@
             closeQrBtn.addEventListener('click', () => qrModal.classList.remove('active'));
             qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('active'); });
 
-            // Download QR as PNG
             downloadPngBtn.addEventListener('click', () => {
                 const link = document.createElement('a');
                 link.download = 'menu-qr.png';
@@ -387,54 +394,24 @@
                 link.click();
             });
 
-            // Download QR as PDF (using jsPDF)
             downloadPdfQrBtn.addEventListener('click', () => {
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const imgData = qrCanvas.toDataURL('image/png');
-                const imgWidth = 80; // mm
+                const imgWidth = 80;
                 const imgHeight = 80;
                 const x = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
                 const y = 50;
-                pdf.setFontSize(16);
-                pdf.text('QR-код меню', x, 40);
+                // Только изображение, без текста
                 pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
                 pdf.setFontSize(10);
-                pdf.text('Отсканируйте, чтобы открыть меню', x, y + imgHeight + 10);
+                pdf.text('Scan to open the menu', x, y + imgHeight + 10);
                 pdf.save('qr-menu.pdf');
             });
 
-            // Download full menu as PDF
-            pdfMenuBtn.addEventListener('click', () => {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const margin = 15;
-                let y = margin;
-                const lineHeight = 7;
-                pdf.setFontSize(18);
-                pdf.text(menuData.restaurantName || 'Меню', margin, y);
-                y += 12;
-                pdf.setFontSize(11);
-                const items = getFilteredItems();
-                items.forEach((item, idx) => {
-                    // Check page break
-                    if (y > 270) {
-                        pdf.addPage();
-                        y = margin;
-                    }
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text(`${item.name}`, margin, y);
-                    const priceWidth = pdf.getTextWidth(`${item.price} ₸`);
-                    pdf.text(`${item.price} ₸`, pdf.internal.pageSize.getWidth() - margin - priceWidth, y);
-                    y += lineHeight;
-                    if (item.desc) {
-                        pdf.setFont(undefined, 'normal');
-                        pdf.text(item.desc, margin, y);
-                        y += lineHeight;
-                    }
-                    y += 3; // spacing
-                });
-                pdf.save('menu.pdf');
+            // Печать меню
+            printBtn.addEventListener('click', () => {
+                window.print();
             });
 
             // Filters
@@ -460,7 +437,7 @@
 
             // PWA
             if ('serviceWorker' in navigator) {
-                const swCode = `const C='menu-v4';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
+                const swCode = `const C='menu-v5';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
                 const blob = new Blob([swCode], {type:'application/javascript'});
                 navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
             }
