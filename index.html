@@ -49,11 +49,12 @@
             margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;
         }
         .restaurant-name { font-size: 1.8rem; font-weight: 800; }
-        .header-actions { display: flex; gap: 0.5rem; }
+        .header-actions { display: flex; gap: 0.5rem; align-items: center; }
         .icon-btn {
             background: var(--card); border: 1px solid var(--border); border-radius: 30px;
             width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
             font-size: 1.3rem; cursor: pointer; transition: 0.2s; color: var(--text);
+            position: relative;
         }
         .icon-btn:active { background: var(--primary); color: white; }
         /* Search & filters */
@@ -122,7 +123,7 @@
         .item-price { font-weight: 800; color: var(--primary); font-size: 1.2rem; }
         .item-weight { font-size: 0.8rem; color: var(--text-light); background: var(--bg); padding: 0.2rem 0.5rem; border-radius: 8px; }
         .empty-state { text-align: center; padding: 3rem; color: var(--text-light); grid-column: 1 / -1; }
-        /* Modal */
+        /* Modal (detail & QR) */
         .modal {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
@@ -132,7 +133,7 @@
         .modal-card {
             background: var(--card); border-radius: 24px; padding: 1.8rem; max-width: 420px;
             width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative;
-            transform: scale(0.9); transition: 0.2s;
+            transform: scale(0.9); transition: 0.2s; text-align: center;
         }
         .modal.active .modal-card { transform: scale(1); }
         .modal-img {
@@ -142,17 +143,22 @@
         }
         .modal-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
         .modal-desc { color: var(--text-light); margin-bottom: 1rem; }
-        .modal-meta { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; }
+        .modal-meta { display: flex; gap: 1rem; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
         .modal-price { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
         .modal-weight { background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.9rem; }
         .close-btn {
             position: absolute; top: 10px; right: 15px; background: var(--bg);
             border: none; font-size: 1.5rem; cursor: pointer; border-radius: 50%;
             width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+            color: var(--text);
         }
-        /* QR */
-        .qr-inline { text-align: center; margin-top: 2rem; display: none; }
-        .qr-inline canvas { border-radius: 16px; }
+        .qr-container { padding: 1rem 0; }
+        .qr-container canvas { border-radius: 16px; }
+        .qr-actions { margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center; }
+        .qr-actions button {
+            background: var(--primary); color: white; border: none; padding: 0.5rem 1rem;
+            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -162,7 +168,7 @@
             <div class="restaurant-name">🍽️ Меню</div>
             <div class="header-actions">
                 <button class="icon-btn" id="themeBtn" title="Тёмная тема">🌓</button>
-                <button class="icon-btn" id="qrBtn" title="QR-код меню">📱</button>
+                <button class="icon-btn" id="qrBtn" title="QR‑код меню">📱</button>
             </div>
         </div>
 
@@ -181,24 +187,35 @@
 
         <!-- Сетка блюд -->
         <div class="menu-grid" id="menuGrid"></div>
-
-        <!-- QR-код (появляется при нажатии) -->
-        <div class="qr-inline" id="qrInline">
-            <p style="margin-bottom:0.5rem;">Сканируйте QR-код, чтобы открыть меню:</p>
-            <canvas id="qrCanvas"></canvas>
-        </div>
     </div>
 
     <!-- Модальное окно блюда -->
     <div class="modal" id="detailModal">
         <div class="modal-card" id="modalCard">
-            <button class="close-btn" id="closeModal">✕</button>
+            <button class="close-btn" id="closeDetailModal">✕</button>
             <div class="modal-img" id="modalImg"></div>
             <div class="modal-name" id="modalName"></div>
             <div class="modal-desc" id="modalDesc"></div>
             <div class="modal-meta">
                 <span class="modal-price" id="modalPrice"></span>
                 <span class="modal-weight" id="modalWeight"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно QR -->
+    <div class="modal" id="qrModal">
+        <div class="modal-card">
+            <button class="close-btn" id="closeQrModal">✕</button>
+            <h3 style="margin-bottom:1rem;">QR‑код меню</h3>
+            <div class="qr-container">
+                <canvas id="qrCanvas"></canvas>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-light); margin-top:0.5rem;">
+                Нажмите и удерживайте, чтобы сохранить
+            </p>
+            <div class="qr-actions">
+                <button id="downloadQr">Скачать</button>
             </div>
         </div>
     </div>
@@ -237,10 +254,12 @@
             const menuGrid = document.getElementById('menuGrid');
             const themeBtn = document.getElementById('themeBtn');
             const qrBtn = document.getElementById('qrBtn');
-            const qrInline = document.getElementById('qrInline');
+            const qrModal = document.getElementById('qrModal');
             const qrCanvas = document.getElementById('qrCanvas');
             const detailModal = document.getElementById('detailModal');
-            const closeModalBtn = document.getElementById('closeModal');
+            const closeDetailBtn = document.getElementById('closeDetailModal');
+            const closeQrBtn = document.getElementById('closeQrModal');
+            const downloadQrBtn = document.getElementById('downloadQr');
 
             let currentCategory = 'all';
             let searchTerm = '';
@@ -254,7 +273,7 @@
             setTheme(localStorage.getItem('menuTheme') === 'dark');
             themeBtn.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
 
-            // Подсветка текста
+            // Подсветка
             function highlight(text, term) {
                 if (!term.trim()) return text;
                 const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
@@ -269,11 +288,11 @@
                 }
                 const term = searchTerm.trim().toLowerCase();
                 if (term) {
-                    items = items.filter(item => {
-                        return item.name.toLowerCase().includes(term) || 
-                               (item.desc && item.desc.toLowerCase().includes(term)) ||
-                               String(item.price).includes(term);
-                    });
+                    items = items.filter(item => 
+                        item.name.toLowerCase().includes(term) || 
+                        (item.desc && item.desc.toLowerCase().includes(term)) ||
+                        String(item.price).includes(term)
+                    );
                 }
                 if (maxPrice !== Infinity && !isNaN(maxPrice)) {
                     items = items.filter(item => item.price <= maxPrice);
@@ -334,7 +353,7 @@
                 });
             }
 
-            // Показать детали
+            // Детали блюда
             function showDetail(item) {
                 document.getElementById('modalImg').innerHTML = item.emoji 
                     ? `<div style="font-size:5rem;">${item.emoji}</div>` 
@@ -347,20 +366,44 @@
                 detailModal.classList.add('active');
             }
 
-            function hideDetail() {
-                detailModal.classList.remove('active');
+            function hideDetail() { detailModal.classList.remove('active'); }
+            closeDetailBtn.addEventListener('click', hideDetail);
+            detailModal.addEventListener('click', (e) => { if (e.target === detailModal) hideDetail(); });
+
+            // QR-код
+            function generateQR() {
+                const url = window.location.href.split('?')[0];
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+                img.onload = () => {
+                    const ctx = qrCanvas.getContext('2d');
+                    qrCanvas.width = img.width;
+                    qrCanvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.onerror = () => {
+                    qrCanvas.parentElement.innerHTML = '<p style="color:red;">Не удалось загрузить QR-код</p>';
+                };
             }
 
-            closeModalBtn.addEventListener('click', hideDetail);
-            detailModal.addEventListener('click', (e) => {
-                if (e.target === detailModal) hideDetail();
+            qrBtn.addEventListener('click', () => {
+                generateQR();
+                qrModal.classList.add('active');
+            });
+            closeQrBtn.addEventListener('click', () => qrModal.classList.remove('active'));
+            qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('active'); });
+
+            // Скачать QR
+            downloadQrBtn.addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.download = 'menu-qr.png';
+                link.href = qrCanvas.toDataURL('image/png');
+                link.click();
             });
 
             // Обработчики фильтров
-            searchInput.addEventListener('input', (e) => {
-                searchTerm = e.target.value;
-                renderItems();
-            });
+            searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; renderItems(); });
             maxPriceInput.addEventListener('input', (e) => {
                 const val = parseInt(e.target.value);
                 maxPrice = isNaN(val) ? Infinity : val;
@@ -375,24 +418,6 @@
                 renderAll();
             });
 
-            // QR-код
-            qrBtn.addEventListener('click', () => {
-                const url = window.location.href.split('?')[0];
-                qrInline.style.display = 'block';
-                const img = new Image();
-                img.crossOrigin = 'Anonymous';
-                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
-                img.onload = () => {
-                    const ctx = qrCanvas.getContext('2d');
-                    qrCanvas.width = img.width;
-                    qrCanvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                };
-                img.onerror = () => {
-                    qrCanvas.parentElement.innerHTML += '<p style="color:red;">Ошибка загрузки QR</p>';
-                };
-            });
-
             function renderAll() {
                 renderTabs();
                 renderItems();
@@ -400,7 +425,7 @@
 
             // PWA
             if ('serviceWorker' in navigator) {
-                const swCode = `const C='menu-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
+                const swCode = `const C='menu-v3';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
                 const blob = new Blob([swCode], {type:'application/javascript'});
                 navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
             }
