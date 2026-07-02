@@ -1,0 +1,243 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Меню | Кафе</title>
+    <!-- PWA manifest (base64) -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogItCc0LXQvdGOIiwKICAic2hvcnRfbmFtZSI6ICLQnNC10L3RjiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNjQwMCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJd01EQXhaQ0lnYUdsd1BTSXdNREF4WkNJZ2FHVnBaMmgwUFNJd01EQXhaQ0lnY0dGemNEMGlZVzUxYkd3aUlIVnVhWEo1UFNKb2RIUndPaTh2ZDNkM0xuY3pMbTl5Wnk4eU1EQXdMM04yWnlJZ2VHMXNibk02SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0S1BDOXpkbWMrIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
+    <meta name="theme-color" content="#ff6400">
+    <style>
+        :root {
+            --bg: #faf9f7;
+            --card: #ffffff;
+            --primary: #ff6400;
+            --text: #2c2c2c;
+            --text-light: #6b7280;
+            --border: #e5e0d8;
+            --radius: 16px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .dark { --bg: #1c1b1a; --card: #2a2826; --text: #f0ebe4; --text-light: #a8a29e; --border: #3d3935; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container { max-width: 480px; margin: 0 auto; min-height: 100vh; padding: 1rem; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+        h1 { font-size: 1.8rem; font-weight: 800; }
+        .theme-toggle {
+            background: var(--card); border: 1px solid var(--border); border-radius: 30px;
+            padding: 0.4rem; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; cursor: pointer; transition: 0.2s;
+        }
+        .theme-toggle:active { background: var(--primary); color: white; }
+        .search-box { margin-bottom: 1rem; position: relative; }
+        .search-box input {
+            width: 100%; padding: 0.8rem 1rem; border: 1px solid var(--border); border-radius: 12px;
+            background: var(--card); font-size: 1rem; outline: none; transition: 0.2s;
+            color: var(--text);
+        }
+        .search-box input:focus { border-color: var(--primary); }
+        .tabs { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1rem; scrollbar-width: none; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab {
+            padding: 0.5rem 1rem; border-radius: 20px; background: var(--card);
+            border: 1px solid var(--border); white-space: nowrap; cursor: pointer;
+            font-weight: 500; font-size: 0.9rem; transition: 0.2s;
+        }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .menu-grid { display: grid; gap: 0.8rem; }
+        .menu-item {
+            background: var(--card); border-radius: var(--radius); padding: 1rem;
+            box-shadow: var(--shadow); display: flex; gap: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+        }
+        .menu-item:active { transform: scale(0.99); }
+        .item-img {
+            width: 80px; height: 80px; border-radius: 12px; background: #f3f4f6;
+            flex-shrink: 0; object-fit: cover;
+        }
+        .item-info { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+        .item-name { font-weight: 700; font-size: 1.1rem; }
+        .item-desc { font-size: 0.85rem; color: var(--text-light); }
+        .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .item-price { font-weight: 800; color: var(--primary); font-size: 1.2rem; }
+        .item-weight { font-size: 0.8rem; color: var(--text-light); }
+        .qr-section { margin-top: 2rem; text-align: center; }
+        .qr-section button {
+            background: var(--primary); color: white; border: none; padding: 0.7rem 1.5rem;
+            border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 1rem;
+        }
+        .qr-output { margin-top: 1rem; display: none; }
+        .qr-output canvas { border-radius: 12px; }
+        .empty { text-align: center; padding: 2rem; color: var(--text-light); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Меню</h1>
+            <button class="theme-toggle" id="themeBtn" title="Тёмная тема">🌓</button>
+        </header>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск блюда...">
+        </div>
+        <div class="tabs" id="tabsContainer"></div>
+        <div class="menu-grid" id="menuGrid"></div>
+        <div class="qr-section">
+            <button id="showQrBtn">📱 Показать QR‑код для этого меню</button>
+            <div class="qr-output" id="qrOutput">
+                <p style="margin-bottom:0.5rem;">Сканируйте, чтобы открыть меню:</p>
+                <canvas id="qrCanvas"></canvas>
+                <p style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-light);">Нажмите и удерживайте, чтобы сохранить</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ДАННЫЕ МЕНЮ (редактируй здесь!) ========== -->
+    <script>
+        const menuData = {
+            "categories": [
+                { "id": "breakfast", "name": "Завтраки" },
+                { "id": "salads", "name": "Салаты" },
+                { "id": "hot", "name": "Горячее" },
+                { "id": "drinks", "name": "Напитки" }
+            ],
+            "items": [
+                { "id":1, "category":"breakfast", "name":"Омлет с овощами", "price":1200, "weight":"250 г", "desc":"Воздушный омлет с помидорами и шпинатом", "img":"" },
+                { "id":2, "category":"breakfast", "name":"Сырники со сметаной", "price":1500, "weight":"200 г", "desc":"Нежные сырники из творога с фермерской сметаной", "img":"" },
+                { "id":3, "category":"salads", "name":"Цезарь с курицей", "price":1800, "weight":"280 г", "desc":"Классический салат с соусом собственного приготовления", "img":"" },
+                { "id":4, "category":"salads", "name":"Греческий", "price":1400, "weight":"250 г", "desc":"Свежие овощи, оливки, фета", "img":"" },
+                { "id":5, "category":"hot", "name":"Стейк из лосося", "price":3200, "weight":"180 г", "desc":"Лосось на гриле с лимонным соусом", "img":"" },
+                { "id":6, "category":"hot", "name":"Паста карбонара", "price":2200, "weight":"300 г", "desc":"С беконом и пармезаном", "img":"" },
+                { "id":7, "category":"drinks", "name":"Эспрессо", "price":600, "weight":"30 мл", "desc":"Крепкий ароматный кофе", "img":"" },
+                { "id":8, "category":"drinks", "name":"Лимонад домашний", "price":800, "weight":"300 мл", "desc":"Освежающий, с мятой и лаймом", "img":"" }
+            ]
+        };
+    </script>
+
+    <script>
+        (function() {
+            const searchInput = document.getElementById('searchInput');
+            const tabsContainer = document.getElementById('tabsContainer');
+            const menuGrid = document.getElementById('menuGrid');
+            const themeBtn = document.getElementById('themeBtn');
+            const showQrBtn = document.getElementById('showQrBtn');
+            const qrOutput = document.getElementById('qrOutput');
+            const qrCanvas = document.getElementById('qrCanvas');
+
+            let currentCategory = 'all';
+            let searchTerm = '';
+
+            // Темная тема
+            function setTheme(isDark) {
+                document.body.classList.toggle('dark', isDark);
+                localStorage.setItem('menuTheme', isDark ? 'dark' : 'light');
+            }
+            const savedTheme = localStorage.getItem('menuTheme') === 'dark';
+            setTheme(savedTheme);
+            themeBtn.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+
+            // Фильтрация
+            function getFilteredItems() {
+                let items = menuData.items;
+                if (currentCategory !== 'all') {
+                    items = items.filter(item => item.category === currentCategory);
+                }
+                if (searchTerm.trim()) {
+                    const term = searchTerm.toLowerCase();
+                    items = items.filter(item => item.name.toLowerCase().includes(term) || (item.desc && item.desc.toLowerCase().includes(term)));
+                }
+                return items;
+            }
+
+            function renderTabs() {
+                tabsContainer.innerHTML = `<div class="tab ${currentCategory==='all'?'active':''}" data-cat="all">Все</div>`;
+                menuData.categories.forEach(cat => {
+                    const tab = document.createElement('div');
+                    tab.className = `tab ${currentCategory===cat.id?'active':''}`;
+                    tab.dataset.cat = cat.id;
+                    tab.textContent = cat.name;
+                    tabsContainer.appendChild(tab);
+                });
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        currentCategory = e.target.dataset.cat;
+                        searchInput.value = '';
+                        searchTerm = '';
+                        renderAll();
+                    });
+                });
+            }
+
+            function renderItems() {
+                const items = getFilteredItems();
+                menuGrid.innerHTML = '';
+                if (items.length === 0) {
+                    menuGrid.innerHTML = '<div class="empty">Ничего не найдено 😔</div>';
+                    return;
+                }
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'menu-item';
+                    card.innerHTML = `
+                        ${item.img ? `<img src="${item.img}" alt="${item.name}" class="item-img" loading="lazy">` : '<div class="item-img" style="background:#eee;"></div>'}
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            ${item.desc ? `<div class="item-desc">${item.desc}</div>` : ''}
+                            <div class="item-footer">
+                                <span class="item-price">${item.price} ₸</span>
+                                ${item.weight ? `<span class="item-weight">${item.weight}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                    menuGrid.appendChild(card);
+                });
+            }
+
+            function renderAll() {
+                renderTabs();
+                renderItems();
+            }
+
+            searchInput.addEventListener('input', (e) => {
+                searchTerm = e.target.value;
+                renderItems();
+            });
+
+            // Генерация QR-кода
+            showQrBtn.addEventListener('click', () => {
+                const url = window.location.href.split('?')[0]; // текущий URL меню
+                qrOutput.style.display = 'block';
+                // Используем API QR-сервера (бесплатный, без ограничений)
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+                img.onload = () => {
+                    const ctx = qrCanvas.getContext('2d');
+                    qrCanvas.width = img.width;
+                    qrCanvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.onerror = () => {
+                    qrCanvas.parentElement.innerHTML = '<p style="color:red;">Не удалось загрузить QR. Проверьте интернет.</p>';
+                };
+            });
+
+            // PWA service worker
+            if ('serviceWorker' in navigator) {
+                const swCode = `const C='menu-v1';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
+                const blob = new Blob([swCode], {type:'application/javascript'});
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+            }
+
+            renderAll();
+        })();
+    </script>
+</body>
+</html>
