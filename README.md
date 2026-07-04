@@ -3,5 +3,8 @@
 Микро-сервис для генерации QR-кодов для меню ресторанов. 
 Быстро, просто и без лишней регистрации.
 
-### Как использовать:
-Просто введите ссылку на ваше меню, и сервис выдаст готовый QR-код для печати.
+A micro-service for generating QR codes for restaurant menus.
+
+Fast, easy, and without registration.
+
+
