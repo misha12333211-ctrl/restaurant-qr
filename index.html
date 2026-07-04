@@ -3,482 +3,603 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Меню | Ресторан</title>
-    <!-- PWA manifest (base64) -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogItCc0LXQvdGOIiwKICAic2hvcnRfbmFtZSI6ICLQnNC10L3RjiIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmFmOWY3IiwKICAidGhlbWVfY29sb3IiOiAiI2ZmNjQwMCIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIZHBaSFJvUFNJd01EQXhaQ0lnYUdsd1BTSXdNREF4WkNJZ2FHVnBaMmgwUFNJd01EQXhaQ0lnY0dGemNEMGlZVzUxYkd3aUlIVnVhWEo1UFNKb2RIUndPaTh2ZDNkM0xuY3pMbTl5Wnk4eU1EQXdMM04yWnlJZ2VHMXNibk02SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0S1BDOXpkbWMrIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
-    <meta name="theme-color" content="#ff6400">
+    <title>Premium Menu | QR-Order</title>
+    <meta name="theme-color" content="#E05A47">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg: #faf9f7;
-            --card: #ffffff;
-            --primary: #ff6400;
-            --primary-light: #fff1e6;
-            --text: #2c2c2c;
-            --text-light: #6b7280;
-            --border: #e5e0d8;
-            --radius: 16px;
-            --shadow: 0 2px 8px rgba(0,0,0,0.05);
-            --highlight: #ffead4;
+            --bg: #F8F9FA;
+            --card: #FFFFFF;
+            --primary: #E05A47;
+            --primary-light: #FCEBE8;
+            --text: #1A1A1A;
+            --text-light: #71717A;
+            --border: #E4E4E7;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 12px 24px rgba(0, 0, 0, 0.06);
+            --font: 'Plus Jakarta Sans', system-ui, sans-serif;
         }
+
         .dark {
-            --bg: #1c1b1a;
-            --card: #2a2826;
-            --text: #f0ebe4;
-            --text-light: #a8a29e;
-            --border: #3d3935;
-            --primary: #ff6400;
-            --primary-light: #3d2a1c;
-            --highlight: #5c3d1c;
+            --bg: #121214;
+            --card: #1E1E22;
+            --text: #F4F4F5;
+            --text-light: #A1A1AA;
+            --border: #2A2A30;
+            --primary-light: #351F1C;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-md: 0 16px 32px rgba(0, 0, 0, 0.3);
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
+
+        /* Убираем синее выделение при тапе на мобилках отовсюду */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-font-smoothing: antialiased; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none;
+        }
+        
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-family: var(--font);
             background: var(--bg);
             color: var(--text);
-            transition: background 0.3s, color 0.3s;
-            -webkit-tap-highlight-color: transparent;
-            line-height: 1.4;
+            transition: background 0.25s ease, color 0.25s ease;
+            padding-bottom: 110px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            width: 100%;
+        }
+
+        .header {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            width: 100%;
         }
-        .container {
-            max-width: 1200px; margin: 0 auto; width: 100%;
-            padding: 1rem 1.5rem;
-            flex: 1;
+        
+        .brand {
+            text-align: center;
+            width: 100%;
         }
-        .top-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 1.2rem; flex-wrap: wrap; gap: 0.5rem;
+        .brand h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.5px; word-break: break-word; }
+        .brand p { font-size: 0.85rem; color: var(--text-light); margin-top: 2px; }
+
+        .actions-bar { 
+            display: flex; 
+            gap: 0.5rem; 
+            align-items: center; 
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
         }
-        .restaurant-name { font-size: 1.8rem; font-weight: 800; }
-        .header-actions { display: flex; gap: 0.5rem; align-items: center; }
-        .icon-btn {
-            background: var(--card); border: 1px solid var(--border); border-radius: 30px;
-            width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
-            font-size: 1.3rem; cursor: pointer; transition: 0.2s; color: var(--text);
-            text-decoration: none;
+
+        @media(min-width: 600px) {
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .brand { text-align: left; width: auto; }
+            .actions-bar { justify-content: flex-end; width: auto; }
         }
-        .icon-btn:active { background: var(--primary); color: white; }
-        .search-area {
-            background: var(--card); border-radius: var(--radius); padding: 0.8rem 1rem;
-            margin-bottom: 1rem; box-shadow: var(--shadow);
-            display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center;
+        
+        .select-custom {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.7rem;
+            border-radius: 10px;
+            font-family: var(--font);
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
         }
+
+        .btn-round {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+        .btn-round svg { width: 18px; height: 18px; fill: var(--text); }
+
+        .search-container { position: relative; margin-bottom: 1.25rem; width: 100%; }
         .search-input {
-            flex: 2; min-width: 150px; padding: 0.7rem 1rem; border: 1px solid var(--border);
-            border-radius: 12px; font-size: 1rem; background: var(--bg); color: var(--text); outline: none;
+            width: 100%; padding: 0.8rem 2.5rem; border: 1px solid var(--border);
+            border-radius: var(--radius-md); background: var(--card); color: var(--text);
+            font-family: var(--font); font-size: 0.9rem; box-shadow: var(--shadow-sm);
         }
         .search-input:focus { border-color: var(--primary); }
-        .filter-group { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
-        .filter-group label { font-size: 0.85rem; color: var(--text-light); }
-        .filter-group input[type=number] {
-            width: 80px; padding: 0.5rem; border: 1px solid var(--border); border-radius: 10px;
-            background: var(--bg); color: var(--text); font-size: 0.9rem;
+        .search-icon { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 1rem; }
+        .clear-search-btn { position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-light); font-size: 1rem; cursor: pointer; display: none; }
+
+        .categories-scroll {
+            display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.25rem; scrollbar-width: none; width: 100%;
         }
-        .clear-btn {
-            background: transparent; border: 1px solid var(--border); color: var(--text-light);
-            padding: 0.5rem 0.8rem; border-radius: 10px; cursor: pointer; font-size: 0.8rem;
+        .categories-scroll::-webkit-scrollbar { display: none; }
+        .chip {
+            padding: 0.5rem 1.1rem; background: var(--card); border: 1px solid var(--border); border-radius: 100px;
+            font-size: 0.85rem; font-weight: 600; white-space: nowrap; cursor: pointer; color: var(--text-light);
         }
-        .clear-btn:active { background: var(--primary-light); }
-        .tabs {
-            display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem;
-            margin-bottom: 1rem; scrollbar-width: none;
+        .chip.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 0.85rem; width: 100%; }
+        @media(min-width: 650px) { .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
+
+        .product-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+            padding: 0.9rem; display: flex; gap: 0.9rem; position: relative; box-shadow: var(--shadow-sm); cursor: pointer;
+            align-items: center; min-width: 0;
         }
-        .tabs::-webkit-scrollbar { display: none; }
-        .tab {
-            padding: 0.5rem 1.2rem; border-radius: 20px; background: var(--card);
-            border: 1px solid var(--border); white-space: nowrap; cursor: pointer;
-            font-weight: 500; font-size: 0.9rem; transition: 0.2s; color: var(--text);
+        
+        .prod-img-box {
+            position: relative; width: 85px; height: 85px; background: var(--bg); border-radius: var(--radius-md);
+            overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
         }
-        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .menu-grid {
-            display: grid; gap: 1rem;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+
+        .badge {
+            position: absolute; top: 4px; left: 4px; background: rgba(255,255,255,0.95); color: #1A1A1A;
+            padding: 2px 5px; border-radius: 4px; font-size: 0.6rem; font-weight: 800; z-index: 2;
         }
-        @media (max-width: 480px) {
-            .container { padding: 0.8rem; }
-            .menu-grid { grid-template-columns: 1fr; }
+
+        .prod-details { display: flex; flex-direction: column; justify-content: space-between; flex: 1; min-width: 0; height: 100%; }
+        .prod-title { font-weight: 700; font-size: 1.05rem; letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .prod-desc { font-size: 0.8rem; color: var(--text-light); margin: 2px 0 8px 0; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .prod-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 0.5rem; }
+        .prod-price { font-weight: 800; font-size: 1.1rem; color: var(--text); white-space: nowrap; }
+        
+        .stepper-container { display: flex; align-items: center; gap: 0.6rem; position: relative; z-index: 5; }
+        
+        .btn-add {
+            background: var(--primary); color: #FFFFFF; border: none; 
+            padding: 0.55rem 1.1rem; border-radius: 12px; font-weight: 800; 
+            font-size: 0.85rem; cursor: pointer; transition: transform 0.1s ease;
+            box-shadow: 0 4px 8px rgba(224, 90, 71, 0.2); white-space: nowrap;
         }
-        .menu-item {
-            background: var(--card); border-radius: var(--radius); padding: 1rem;
-            box-shadow: var(--shadow); display: flex; gap: 1rem;
-            transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
-            border: 1px solid transparent;
+        .btn-add:active { transform: scale(0.95); }
+
+        .btn-stepper {
+            background: var(--primary-light); color: var(--primary); border: none; width: 32px; height: 32px;
+            border-radius: 10px; font-weight: 700; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
-        .menu-item:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
-        .menu-item:active { transform: scale(0.99); }
-        .item-img {
-            width: 90px; height: 90px; border-radius: 14px; background: var(--bg);
-            flex-shrink: 0; object-fit: cover; font-size: 2.5rem;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
+        .stepper-count { font-size: 0.95rem; font-weight: 700; min-width: 20px; text-align: center; }
+
+        .modal-section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--text-light); margin-top: 1.25rem; margin-bottom: 0.4rem; letter-spacing: 0.5px; }
+        .modal-section-text { font-size: 0.95rem; color: var(--text); line-height: 1.45; }
+
+        .cart-bar {
+            position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); width: calc(100% - 24px); max-width: 500px;
+            background: #1E1E22; color: #FFF; padding: 0.85rem 1.2rem; border-radius: 100px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.25); z-index: 99; visibility: hidden; opacity: 0; transform: translateX(-50%) translateY(10px); transition: all 0.3s ease; border: 1px solid #2A2A30;
         }
-        .item-img.emoji-placeholder { background: var(--primary-light); }
-        .item-info { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
-        .item-name { font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 0.3rem; }
-        .item-name .highlight { background: var(--highlight); border-radius: 4px; padding: 0 2px; }
-        .item-desc { font-size: 0.85rem; color: var(--text-light); }
-        .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .item-price { font-weight: 800; color: var(--primary); font-size: 1.2rem; }
-        .item-weight { font-size: 0.8rem; color: var(--text-light); background: var(--bg); padding: 0.2rem 0.5rem; border-radius: 8px; }
-        .empty-state { text-align: center; padding: 3rem; color: var(--text-light); grid-column: 1 / -1; }
-        .modal {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
-            z-index: 200; visibility: hidden; opacity: 0; transition: 0.2s;
+        .cart-bar.active { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+        .cart-info { display: flex; flex-direction: column; }
+        .cart-count { font-size: 0.75rem; color: #A1A1AA; }
+        .cart-total { font-size: 1.1rem; font-weight: 700; }
+        .btn-checkout { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 100px; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 999; opacity: 0; visibility: hidden; transition: 0.2s;
+            padding: 1rem;
         }
-        .modal.active { visibility: visible; opacity: 1; }
-        .modal-card {
-            background: var(--card); border-radius: 24px; padding: 1.8rem; max-width: 420px;
-            width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); position: relative;
-            transform: scale(0.9); transition: 0.2s; text-align: center;
+        .overlay.active { opacity: 1; visibility: visible; }
+        
+        .modal-sheet {
+            background: var(--card); width: 100%; max-width: 440px; border-radius: var(--radius-lg); padding: 2.2rem 1.25rem 1.5rem 1.25rem;
+            transform: translateY(15px); transition: transform 0.2s; position: relative; border: 1px solid var(--border); max-height: 85vh; overflow-y: auto;
         }
-        .modal.active .modal-card { transform: scale(1); }
-        .modal-img {
-            width: 100%; height: 200px; border-radius: 16px; background: var(--bg);
-            object-fit: cover; display: flex; align-items: center; justify-content: center;
-            font-size: 5rem; margin-bottom: 1rem;
+        .overlay.active .modal-sheet { transform: translateY(0); }
+        .modal-close-trigger {
+            position: absolute; top: 12px; right: 12px; background: var(--bg); border: 1px solid var(--border);
+            width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: var(--text); z-index: 10;
         }
-        .modal-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
-        .modal-desc { color: var(--text-light); margin-bottom: 1rem; }
-        .modal-meta { display: flex; gap: 1rem; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
-        .modal-price { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
-        .modal-weight { background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 12px; font-size: 0.9rem; }
-        .close-btn {
-            position: absolute; top: 10px; right: 15px; background: var(--bg);
-            border: none; font-size: 1.5rem; cursor: pointer; border-radius: 50%;
-            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-            color: var(--text);
+
+        #qrcode-wrapper { display: inline-block; cursor: pointer; position: relative; margin: 0 auto;}
+        #qrcode { padding: 10px; background: white; border-radius: 12px; }
+        .toast {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-30px); background: #1A1A1E; color: white; padding: 0.6rem 1.2rem; border-radius: 50px;
+            font-size: 0.85rem; font-weight: 600; box-shadow: var(--shadow-md); z-index: 1000; opacity: 0; transition: all 0.3s;
         }
-        .qr-container { padding: 1rem 0; }
-        .qr-container canvas { border-radius: 16px; }
-        .qr-actions { margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center; }
-        .qr-actions button {
-            background: var(--primary); color: white; border: none; padding: 0.5rem 1rem;
-            border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
-        }
-        /* Footer */
-        .footer {
-            margin-top: 2rem; padding: 1.5rem 1rem;
-            background: var(--card); border-radius: var(--radius);
-            box-shadow: var(--shadow); text-align: center; font-size: 0.9rem;
-            color: var(--text-light);
-        }
-        .footer p { margin: 0.3rem 0; }
-        .footer .address { font-weight: 500; color: var(--text); }
-        .footer .update-date { font-size: 0.8rem; color: var(--text-light); }
-        /* Стили для печати */
-        @media print {
-            .top-bar, .search-area, .tabs, .icon-btn, .qr-actions, .modal, button, .header-actions {
-                display: none !important;
-            }
-            body { background: white; color: black; }
-            .container { padding: 0; max-width: 100%; }
-            .menu-grid { grid-template-columns: 1fr; gap: 0.5rem; }
-            .menu-item { box-shadow: none; border-bottom: 1px solid #ddd; page-break-inside: avoid; }
-            .footer { box-shadow: none; border-top: 1px solid #ddd; }
-        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
+
+    <div class="toast" id="toastNotice"></div>
+
     <div class="container">
-        <div class="top-bar">
-            <div class="restaurant-name">🍽️ Меню</div>
-            <div class="header-actions">
-                <button class="icon-btn" id="themeBtn" title="Тёмная тема">🌓</button>
-                <button class="icon-btn" id="printBtn" title="Распечатать меню">🖨️</button>
-                <button class="icon-btn" id="qrBtn" title="QR‑код меню">📱</button>
+        <header class="header">
+            <div class="brand">
+                <h1 id="restName">Marrone Rosso</h1>
+                <p id="restSub">Premium Cafe & Restaurant</p>
             </div>
-        </div>
-        <div class="search-area">
-            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск блюда или цены...">
-            <div class="filter-group">
-                <label>Цена до:</label>
-                <input type="number" id="maxPriceInput" placeholder="₸" min="0" step="100">
-                <button class="clear-btn" id="clearFilters">Сбросить</button>
+            <div class="actions-bar">
+                <select class="select-custom" id="langSelector">
+                    <option value="ru">RU</option>
+                    <option value="en">EN</option>
+                </select>
+                <select class="select-custom" id="currencySelector">
+                    <option value="AMD">֏ (AMD)</option>
+                    <option value="USD">$ (USD)</option>
+                    <option value="EUR">€ (EUR)</option>
+                    <option value="RUB">₽ (RUB)</option>
+                </select>
+                <button class="btn-round" id="copyLinkToggle"><svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></button>
+                <button class="btn-round" id="themeToggle"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.38 5.38 0 0 1-4.4 2.26 5.4 5.4 0 0 1-5.14-5.14 5.38 5.38 0 0 1 2.26-4.4c-.44-.06-.9-.1-1.36-.1z"/></svg></button>
+                <button class="btn-round" id="qrToggle"><svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13 0h3v2h-3v-2zm-2-2h2v2h-2v-2zm2 4h2v4h-2v-4zm-2 2h2v2h-2v-2zm-2-2h2v2h-2v-2zm2-2h2v2h-2v-2zm4-2h2v2h-2v-2z"/></svg></button>
             </div>
+        </header>
+
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchField" placeholder="Поиск...">
+            <button class="clear-search-btn" id="clearSearchClick">✕</button>
         </div>
-        <div class="tabs" id="tabsContainer"></div>
-        <div class="menu-grid" id="menuGrid"></div>
+
+        <div class="categories-scroll" id="categoriesWrapper"></div>
+        <main class="menu-grid" id="menuWrapper"></main>
     </div>
 
-    <footer class="footer" id="footerInfo">
-        <!-- Заполняется из menuData динамически -->
-    </footer>
+    <div class="cart-bar" id="cartIndicator">
+        <div class="cart-info">
+            <span class="cart-count" id="cartCount">0 items</span>
+            <span class="cart-total" id="cartTotal">0 ֏</span>
+        </div>
+        <button class="btn-checkout" id="orderAction">Order</button>
+    </div>
 
-    <div class="modal" id="detailModal">
-        <div class="modal-card">
-            <button class="close-btn" id="closeDetailModal">✕</button>
-            <div class="modal-img" id="modalImg"></div>
-            <div class="modal-name" id="modalName"></div>
-            <div class="modal-desc" id="modalDesc"></div>
-            <div class="modal-meta">
-                <span class="modal-price" id="modalPrice"></span>
-                <span class="modal-weight" id="modalWeight"></span>
+    <div class="overlay" id="detailModal" onclick="closeModals(event)">
+        <div class="modal-sheet">
+            <button class="modal-close-trigger" onclick="forceCloseAll()">✕</button>
+            <div id="detailImgBox" style="font-size: 3.5rem; background: var(--bg); padding: 1rem; border-radius: var(--radius-md); text-align: center; margin-bottom: 1rem;"></div>
+            <h2 id="detailTitle" style="font-weight: 800; margin-bottom: 0.25rem; font-size: 1.3rem;"></h2>
+            
+            <div id="detailWeight" style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem;"></div>
+            
+            <div class="modal-section-title" id="lblDesc">Описание</div>
+            <p id="detailDesc" class="modal-section-text"></p>
+            
+            <div class="modal-section-title" id="lblIngredients">Состав и Ингредиенты</div>
+            <p id="detailIngredients" class="modal-section-text"></p>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border);">
+                <span id="detailPrice" style="font-size: 1.3rem; font-weight: 800; color: var(--primary);"></span>
+                <div id="detailStepperPlace"></div>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="qrModal">
-        <div class="modal-card">
-            <button class="close-btn" id="closeQrModal">✕</button>
-            <h3 style="margin-bottom:1rem;">Menu QR Code</h3>
-            <div class="qr-container">
-                <canvas id="qrCanvas"></canvas>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-light); margin-top:0.5rem;">
-                Long press to save as image
-            </p>
-            <div class="qr-actions">
-                <button id="downloadPng">Download PNG</button>
-                <button id="downloadPdfQr">Download PDF</button>
-            </div>
+    <div class="overlay" id="qrModal" onclick="closeModals(event)">
+        <div class="modal-sheet" style="text-align: center;">
+            <button class="modal-close-trigger" onclick="forceCloseAll()">✕</button>
+            <h3 id="qrModalTitle" style="margin-bottom: 1.25rem; font-weight: 800; font-size: 1.1rem;">QR Code</h3>
+            <div id="qrcode-wrapper"><div id="qrcode"></div></div>
+            <p id="qrModalTip" style="font-size:0.8rem; color:var(--text-light); margin-top:1.25rem;">Click to download</p>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
     <script>
-        const menuData = {
-            "restaurantName": "Мой ресторан",
-            "categories": [
-                { "id": "breakfast", "name": "Завтраки" },
-                { "id": "salads", "name": "Салаты" },
-                { "id": "hot", "name": "Горячее" },
-                { "id": "drinks", "name": "Напитки" }
+        const db = {
+            restaurantName: "Marrone Rosso",
+            categories: {
+                ru: [{ id: "all", name: "Все" }, { id: "breakfast", name: "Завтраки" }, { id: "hot", name: "Горячее" }, { id: "drinks", name: "Напитки" }],
+                en: [{ id: "all", name: "All" }, { id: "breakfast", name: "Breakfast" }, { id: "hot", name: "Mains" }, { id: "drinks", name: "Drinks" }]
+            },
+            items: [
+                { 
+                    id: 1, 
+                    category: "breakfast", 
+                    name: {ru: "Сырники из творога", en: "Cottage Cheese Pancakes"}, 
+                    priceAMD: 1500, 
+                    weight: {ru: "220 г", en: "220 g"},
+                    desc: {ru: "Нежные сырники из натурального фермерского творога. Подаются горячими с прохладной сметаной и домашним конфитюром.", en: "Fluffy pancakes made from local cottage cheese. Served warm with fresh sour cream and homemade berry jam."}, 
+                    ingredients: {ru: "Творог 9%, фермерские яйца, пшеничная мука высшего сорта, тростниковый сахар, натуральная ваниль, лесные ягоды.", en: "Cottage cheese 9%, organic eggs, premium wheat flour, cane sugar, natural vanilla, wild berries."},
+                    emoji: "🥞", 
+                    tag: {ru: "Хит", en: "Hit"} 
+                },
+                { 
+                    id: 2, 
+                    category: "hot", 
+                    name: {ru: "Паста Карбонара", en: "Pasta Carbonara"}, 
+                    priceAMD: 2400, 
+                    weight: {ru: "350 г", en: "350 g"},
+                    desc: {ru: "Классическая паста родом из Рима. Тонкие спагетти, смешанные с пикантным соусом из яичных желтков и ароматного сыра с хрустящим беконом.", en: "A Roman classic. Al dente spaghetti tossed in a rich, creamy sauce of egg yolks, authentic aged cheese, and crispy cured bacon."}, 
+                    ingredients: {ru: "Спагетти из твердых сортов пшеницы, подкопченный свиной бекон, сыр Пармезан, яичный желток, сливки 20%, черный перец.", en: "Durum wheat spaghetti, smoked bacon, Parmesan cheese, fresh egg yolk, 20% heavy cream, freshly ground black pepper."},
+                    emoji: "🍝", 
+                    tag: {ru: "", en: ""} 
+                },
+                { 
+                    id: 3, 
+                    category: "hot", 
+                    name: {ru: "Том Ям с креветками", en: "Tom Yum Soup"}, 
+                    priceAMD: 3200, 
+                    weight: {ru: "400 мл", en: "400 ml"},
+                    desc: {ru: "Знаменитый тайский кисло-острый суп. Насыщенный бульон на кокосовом молоке с добавлением лемонграсса, листьев лайма и свежих морепродуктов.", en: "The iconic Thai hot and sour soup. A fragrant coconut-infused broth bursting with lemongrass, galangal, lime leaves, and tender ocean shrimps."}, 
+                    ingredients: {ru: "Тигровые креветки, кокосовое молоко, грибы вешенки, лемонграсс, паста Том Ям, кинза, перец чили, сок лайма.", en: "Tiger prawns, coconut milk, oyster mushrooms, lemongrass, Tom Yum paste, fresh cilantro, chili pepper, lime juice."},
+                    emoji: "🍜", 
+                    tag: {ru: "Острое", en: "Spicy"} 
+                },
+                { 
+                    id: 4, 
+                    category: "drinks", 
+                    name: {ru: "Домашний лимонад", en: "Homemade Lemonade"}, 
+                    priceAMD: 1100, 
+                    weight: {ru: "330 мл", en: "330 ml"},
+                    desc: {ru: "Освежающий авторский напиток на основе натурального сока цитрусовых. Идеально сбалансированная кислинка и сладость.", en: "Crisp and invigorating signature beverage made from freshly squeezed citrus fruit juices. Perfectly balanced sweet and sour notes."}, 
+                    ingredients: {ru: "Лимонный сок, сок спелого апельсина, газированная очищенная вода, домашний сахарный сироп, свежая перечная мята, лед.", en: "Fresh lemon juice, orange juice, sparkling water, homemade simple syrup, fresh peppermint leaves, crushed ice."},
+                    emoji: "🍹", 
+                    tag: {ru: "New", en: "New"} 
+                }
             ],
-            "items": [
-                { "id":1, "category":"breakfast", "name":"Омлет с овощами", "price":1200, "weight":"250 г", "desc":"Воздушный омлет с помидорами, шпинатом и сыром", "emoji":"🍳" },
-                { "id":2, "category":"breakfast", "name":"Сырники со сметаной", "price":1500, "weight":"200 г", "desc":"Нежные сырники из фермерского творога", "emoji":"🥞" },
-                { "id":3, "category":"salads", "name":"Цезарь с курицей", "price":1800, "weight":"280 г", "desc":"Классический салат с соусом собственного приготовления", "emoji":"🥗" },
-                { "id":4, "category":"salads", "name":"Греческий", "price":1400, "weight":"250 г", "desc":"Свежие овощи, оливки, фета", "emoji":"🥬" },
-                { "id":5, "category":"hot", "name":"Стейк из лосося", "price":3200, "weight":"180 г", "desc":"Лосось на гриле с лимонным соусом и овощами", "emoji":"🐟" },
-                { "id":6, "category":"hot", "name":"Паста карбонара", "price":2200, "weight":"300 г", "desc":"С беконом, яйцом и пармезаном", "emoji":"🍝" },
-                { "id":7, "category":"drinks", "name":"Эспрессо", "price":600, "weight":"30 мл", "desc":"Крепкий ароматный кофе", "emoji":"☕" },
-                { "id":8, "category":"drinks", "name":"Лимонад домашний", "price":800, "weight":"300 мл", "desc":"Освежающий, с мятой и лаймом", "emoji":"🍹" },
-                { "id":9, "category":"hot", "name":"Суп-пюре грибной", "price":1100, "weight":"300 мл", "desc":"Из белых грибов со сливками", "emoji":"🍄" }
-            ],
-            "address": "ул. Пушкина, 10, Ереван, Армения",
-            "phone": "+374 99 123 456",
-            "updatedDate": "2026-07-02" // дата обновления меню
+            ui: {
+                ru: { 
+                    search: "Поиск любимого блюда...", checkout: "Показать заказ", count: "Выбрано: {n} блюд", 
+                    copied: "Ссылка скопирована!", qrTitle: "QR-код этого меню", qrTip: "Нажмите на код, чтобы скачать его в PNG", 
+                    addBtn: "Добавить", lblDesc: "Описание", lblIngredients: "Состав и Ингредиенты"
+                },
+                en: { 
+                    search: "Search dishes...", checkout: "View Order", count: "{n} items selected", 
+                    copied: "Link copied to clipboard!", qrTitle: "Menu QR Code", qrTip: "Click QR code to download PNG", 
+                    addBtn: "Add", lblDesc: "Description", lblIngredients: "Ingredients & Recipe"
+                }
+            }
         };
-    </script>
 
-    <script>
-        (function() {
-            const searchInput = document.getElementById('searchInput');
-            const maxPriceInput = document.getElementById('maxPriceInput');
-            const clearBtn = document.getElementById('clearFilters');
-            const tabsContainer = document.getElementById('tabsContainer');
-            const menuGrid = document.getElementById('menuGrid');
-            const themeBtn = document.getElementById('themeBtn');
-            const qrBtn = document.getElementById('qrBtn');
-            const qrModal = document.getElementById('qrModal');
-            const qrCanvas = document.getElementById('qrCanvas');
-            const detailModal = document.getElementById('detailModal');
-            const closeDetailBtn = document.getElementById('closeDetailModal');
-            const closeQrBtn = document.getElementById('closeQrModal');
-            const downloadPngBtn = document.getElementById('downloadPng');
-            const downloadPdfQrBtn = document.getElementById('downloadPdfQr');
-            const printBtn = document.getElementById('printBtn');
-            const footerInfo = document.getElementById('footerInfo');
+        let exchangeRates = { AMD: 1, USD: 0.0026, EUR: 0.0024, RUB: 0.24 };
+        let currentLang = "ru";
+        let currentCurrency = "AMD";
+        let currencySymbols = { AMD: "֏", USD: "$", EUR: "€", RUB: "₽" };
+        
+        let cart = {};
+        let activeCategory = "all";
+        let searchQuery = "";
+        let currentDetailItem = null;
 
-            let currentCategory = 'all';
-            let searchTerm = '';
-            let maxPrice = Infinity;
-
-            function setTheme(isDark) {
-                document.body.classList.toggle('dark', isDark);
-                localStorage.setItem('menuTheme', isDark ? 'dark' : 'light');
-            }
-            setTheme(localStorage.getItem('menuTheme') === 'dark');
-            themeBtn.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
-
-            function highlight(text, term) {
-                if (!term.trim()) return text;
-                const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-                return text.replace(regex, '<span class="highlight">$1</span>');
-            }
-
-            function getFilteredItems() {
-                let items = menuData.items;
-                if (currentCategory !== 'all') {
-                    items = items.filter(item => item.category === currentCategory);
+        async function fetchExchangeRates() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/AMD');
+                const data = await res.json();
+                if(data && data.rates) {
+                    exchangeRates.USD = data.rates.USD || exchangeRates.USD;
+                    exchangeRates.EUR = data.rates.EUR || exchangeRates.EUR;
+                    exchangeRates.RUB = data.rates.RUB || exchangeRates.RUB;
+                    renderMenu();
+                    updateCartBar();
                 }
-                const term = searchTerm.trim().toLowerCase();
-                if (term) {
-                    items = items.filter(item =>
-                        item.name.toLowerCase().includes(term) ||
-                        (item.desc && item.desc.toLowerCase().includes(term)) ||
-                        String(item.price).includes(term)
-                    );
-                }
-                if (maxPrice !== Infinity && !isNaN(maxPrice)) {
-                    items = items.filter(item => item.price <= maxPrice);
-                }
-                return items;
-            }
+            } catch (e) { console.log("Using backup rates"); }
+        }
 
-            function renderTabs() {
-                tabsContainer.innerHTML = `<div class="tab ${currentCategory==='all'?'active':''}" data-cat="all">Все</div>`;
-                menuData.categories.forEach(cat => {
-                    const tab = document.createElement('div');
-                    tab.className = `tab ${currentCategory===cat.id?'active':''}`;
-                    tab.dataset.cat = cat.id;
-                    tab.textContent = cat.name;
-                    tabsContainer.appendChild(tab);
-                });
-                document.querySelectorAll('.tab').forEach(tab => {
-                    tab.addEventListener('click', (e) => {
-                        currentCategory = e.target.dataset.cat;
-                        searchInput.value = '';
-                        maxPriceInput.value = '';
-                        searchTerm = '';
-                        maxPrice = Infinity;
-                        renderAll();
-                    });
-                });
-            }
+        function getConvertedPrice(priceInAmd) {
+            const rawPrice = priceInAmd * exchangeRates[currentCurrency];
+            if(currentCurrency === 'USD' || currentCurrency === 'EUR') return rawPrice.toFixed(2);
+            return Math.round(rawPrice);
+        }
 
-            function renderItems() {
-                const items = getFilteredItems();
-                menuGrid.innerHTML = '';
-                if (items.length === 0) {
-                    menuGrid.innerHTML = '<div class="empty-state">😔 Ничего не найдено</div>';
-                    return;
-                }
-                items.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'menu-item';
-                    const imgContent = item.emoji
-                        ? `<div class="item-img emoji-placeholder">${item.emoji}</div>`
-                        : (item.img ? `<img src="${item.img}" class="item-img" loading="lazy" alt="${item.name}">`
-                                     : `<div class="item-img emoji-placeholder">🍽️</div>`);
-                    card.innerHTML = `
-                        ${imgContent}
-                        <div class="item-info">
-                            <div class="item-name">${highlight(item.name, searchTerm)}</div>
-                            ${item.desc ? `<div class="item-desc">${highlight(item.desc, searchTerm)}</div>` : ''}
-                            <div class="item-footer">
-                                <span class="item-price">${item.price} ₸</span>
-                                ${item.weight ? `<span class="item-weight">${item.weight}</span>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    card.addEventListener('click', () => showDetail(item));
-                    menuGrid.appendChild(card);
-                });
-            }
+        function renderCategories() {
+            const wrapper = document.getElementById('categoriesWrapper');
+            wrapper.innerHTML = db.categories[currentLang].map(cat => `
+                <div class="chip ${activeCategory === cat.id ? 'active' : ''}" onclick="setCategory('${cat.id}')">
+                    ${cat.name}
+                </div>
+            `).join('');
+        }
 
-            function showDetail(item) {
-                document.getElementById('modalImg').innerHTML = item.emoji
-                    ? `<div style="font-size:5rem;">${item.emoji}</div>`
-                    : (item.img ? `<img src="${item.img}" style="width:100%;height:200px;object-fit:cover;border-radius:16px;">`
-                                 : `<div style="font-size:5rem;">🍽️</div>`);
-                document.getElementById('modalName').textContent = item.name;
-                document.getElementById('modalDesc').textContent = item.desc || '';
-                document.getElementById('modalPrice').textContent = item.price + ' ₸';
-                document.getElementById('modalWeight').textContent = item.weight || '';
-                detailModal.classList.add('active');
-            }
+        function setCategory(id) {
+            activeCategory = id;
+            renderCategories();
+            renderMenu();
+        }
 
-            function hideDetail() { detailModal.classList.remove('active'); }
-            closeDetailBtn.addEventListener('click', hideDetail);
-            detailModal.addEventListener('click', (e) => { if (e.target === detailModal) hideDetail(); });
-
-            // QR generation
-            function generateQR() {
-                const url = window.location.href.split('?')[0];
-                const img = new Image();
-                img.crossOrigin = 'Anonymous';
-                img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
-                img.onload = () => {
-                    const ctx = qrCanvas.getContext('2d');
-                    qrCanvas.width = img.width;
-                    qrCanvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                };
-                img.onerror = () => {
-                    qrCanvas.parentElement.innerHTML = '<p style="color:red;">Could not load QR code</p>';
-                };
-            }
-
-            qrBtn.addEventListener('click', () => {
-                generateQR();
-                qrModal.classList.add('active');
-            });
-            closeQrBtn.addEventListener('click', () => qrModal.classList.remove('active'));
-            qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('active'); });
-
-            downloadPngBtn.addEventListener('click', () => {
-                const link = document.createElement('a');
-                link.download = 'menu-qr.png';
-                link.href = qrCanvas.toDataURL('image/png');
-                link.click();
-            });
-
-            downloadPdfQrBtn.addEventListener('click', () => {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const imgData = qrCanvas.toDataURL('image/png');
-                const imgWidth = 80;
-                const imgHeight = 80;
-                const x = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
-                const y = 50;
-                pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
-                pdf.setFontSize(10);
-                pdf.text('Scan to open the menu', x, y + imgHeight + 10);
-                pdf.save('qr-menu.pdf');
-            });
-
-            // Печать меню
-            printBtn.addEventListener('click', () => {
-                window.print();
-            });
-
-            // Фильтры
-            searchInput.addEventListener('input', (e) => { searchTerm = e.target.value; renderItems(); });
-            maxPriceInput.addEventListener('input', (e) => {
-                const val = parseInt(e.target.value);
-                maxPrice = isNaN(val) ? Infinity : val;
-                renderItems();
-            });
-            clearBtn.addEventListener('click', () => {
-                searchInput.value = '';
-                maxPriceInput.value = '';
-                searchTerm = '';
-                maxPrice = Infinity;
-                currentCategory = 'all';
-                renderAll();
-            });
-
-            // Заполнение футера
-            function renderFooter() {
-                const { address, phone, updatedDate } = menuData;
-                const year = new Date().getFullYear();
-                footerInfo.innerHTML = `
-                    <p class="address">📍 ${address || ''}</p>
-                    ${phone ? `<p>📞 ${phone}</p>` : ''}
-                    <p>🕒 Обновлено: ${updatedDate || 'не указано'}</p>
-                    <p class="update-date">© ${year} ${menuData.restaurantName}. Все права защищены.</p>
+        function generateStepperHtml(itemId) {
+            const count = cart[itemId] || 0;
+            if (count === 0) {
+                return `<button class="btn-add" onclick="event.stopPropagation(); changeQty(${itemId}, 1)">${db.ui[currentLang].addBtn}</button>`;
+            } else {
+                return `
+                    <div class="stepper-container" onclick="event.stopPropagation();">
+                        <button class="btn-stepper" onclick="changeQty(${itemId}, -1)">−</button>
+                        <span class="stepper-count">${count}</span>
+                        <button class="btn-stepper" onclick="changeQty(${itemId}, 1)">+</button>
+                    </div>
                 `;
             }
+        }
 
-            function renderAll() {
-                renderTabs();
-                renderItems();
-                renderFooter();
+        function renderMenu() {
+            const wrapper = document.getElementById('menuWrapper');
+            const filtered = db.items.filter(item => {
+                const matchCat = activeCategory === "all" || item.category === activeCategory;
+                const nameText = item.name[currentLang].toLowerCase();
+                const descText = item.desc[currentLang].toLowerCase();
+                return matchCat && (nameText.includes(searchQuery.toLowerCase()) || descText.includes(searchQuery.toLowerCase()));
+            });
+
+            if(filtered.length === 0) {
+                wrapper.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:3rem; color:var(--text-light)">${currentLang=='ru'?'Ничего не найдено':'No items found'}</div>`;
+                return;
             }
 
-            // PWA
-            if ('serviceWorker' in navigator) {
-                const swCode = `const C='menu-v6';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/index.html'])))});self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)))});`;
-                const blob = new Blob([swCode], {type:'application/javascript'});
-                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
-            }
+            wrapper.innerHTML = filtered.map(item => {
+                return `
+                    <div class="product-card" onclick="openDetail(${item.id}, event)">
+                        <div class="prod-img-box">
+                            ${item.tag[currentLang] ? `<span class="badge">${item.tag[currentLang]}</span>` : ''}
+                            ${item.emoji}
+                        </div>
+                        <div class="prod-details">
+                            <div>
+                                <h3 class="prod-title">${item.name[currentLang]}</h3>
+                                <p class="prod-desc">${item.desc[currentLang]}</p>
+                            </div>
+                            <div class="prod-row">
+                                <span class="prod-price">${getConvertedPrice(item.priceAMD)} ${currencySymbols[currentCurrency]}</span>
+                                ${generateStepperHtml(item.id)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-            renderAll();
-        })();
+        function changeQty(id, delta) {
+            const current = cart[id] || 0;
+            const next = current + delta;
+            if (next <= 0) delete cart[id];
+            else cart[id] = next;
+            
+            updateCartBar();
+            renderMenu();
+            
+            if (currentDetailItem && currentDetailItem.id === id) {
+                document.getElementById('detailStepperPlace').innerHTML = generateStepperHtml(id);
+            }
+        }
+
+        function updateCartBar() {
+            const bar = document.getElementById('cartIndicator');
+            const totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
+            
+            if(totalItems > 0) {
+                let totalPriceAmd = 0;
+                db.items.forEach(item => {
+                    if(cart[item.id]) totalPriceAmd += item.priceAMD * cart[item.id];
+                });
+                
+                document.getElementById('cartCount').textContent = db.ui[currentLang].count.replace('{n}', totalItems);
+                document.getElementById('cartTotal').textContent = `${getConvertedPrice(totalPriceAmd)} ${currencySymbols[currentCurrency]}`;
+                document.getElementById('orderAction').textContent = db.ui[currentLang].checkout;
+                bar.classList.add('active');
+            } else {
+                bar.classList.remove('active');
+            }
+        }
+
+        function openDetail(id, event) {
+            const item = db.items.find(i => i.id === id);
+            currentDetailItem = item;
+            
+            document.getElementById('lblDesc').textContent = db.ui[currentLang].lblDesc;
+            document.getElementById('lblIngredients').textContent = db.ui[currentLang].lblIngredients;
+
+            document.getElementById('detailImgBox').textContent = item.emoji;
+            document.getElementById('detailTitle').textContent = item.name[currentLang];
+            document.getElementById('detailWeight').textContent = item.weight[currentLang];
+            document.getElementById('detailDesc').textContent = item.desc[currentLang];
+            document.getElementById('detailIngredients').textContent = item.ingredients[currentLang];
+            
+            document.getElementById('detailPrice').textContent = `${getConvertedPrice(item.priceAMD)} ${currencySymbols[currentCurrency]}`;
+            document.getElementById('detailStepperPlace').innerHTML = generateStepperHtml(item.id);
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeModals(e) {
+            if (e.target.classList.contains('overlay')) forceCloseAll();
+        }
+
+        function forceCloseAll() {
+            document.getElementById('qrModal').classList.remove('active');
+            document.getElementById('detailModal').classList.remove('active');
+            currentDetailItem = null;
+        }
+
+        document.getElementById('langSelector').addEventListener('change', (e) => {
+            currentLang = e.target.value;
+            document.getElementById('searchField').placeholder = db.ui[currentLang].search;
+            renderCategories();
+            renderMenu();
+            updateCartBar();
+        });
+
+        document.getElementById('currencySelector').addEventListener('change', (e) => {
+            currentCurrency = e.target.value;
+            renderMenu();
+            updateCartBar();
+            if(currentDetailItem) {
+                document.getElementById('detailPrice').textContent = `${getConvertedPrice(currentDetailItem.priceAMD)} ${currencySymbols[currentCurrency]}`;
+            }
+        });
+
+        const searchField = document.getElementById('searchField');
+        const clearSearchClick = document.getElementById('clearSearchClick');
+
+        searchField.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            clearSearchClick.style.display = searchQuery.length > 0 ? 'block' : 'none';
+            renderMenu();
+        });
+
+        clearSearchClick.addEventListener('click', () => {
+            searchField.value = ""; searchQuery = "";
+            clearSearchClick.style.display = 'none'; renderMenu();
+        });
+
+        document.getElementById('copyLinkToggle').addEventListener('click', () => {
+            navigator.clipboard.writeText(window.location.href.split('?')[0]).then(() => {
+                const toast = document.getElementById('toastNotice');
+                toast.textContent = db.ui[currentLang].copied;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
+        });
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+        });
+
+        const qrModal = document.getElementById('qrModal');
+        let qrGenerated = false;
+
+        document.getElementById('qrToggle').addEventListener('click', () => {
+            document.getElementById('qrModalTitle').textContent = db.ui[currentLang].qrTitle;
+            document.getElementById('qrModalTip').textContent = db.ui[currentLang].qrTip;
+            qrModal.classList.add('active');
+            if(!qrGenerated) {
+                new QRCode(document.getElementById("qrcode"), {
+                    text: window.location.href.split('?')[0],
+                    width: 200, height: 200,
+                    colorDark : "#1A1A1E", colorLight : "#ffffff"
+                });
+                qrGenerated = true;
+            }
+        });
+
+        document.getElementById('qrcode-wrapper').addEventListener('click', () => {
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            if(qrCanvas) {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = qrCanvas.toDataURL("image/png");
+                downloadLink.download = `menu-qr.png`;
+                downloadLink.click();
+            }
+        });
+
+        fetchExchangeRates();
+        renderCategories();
+        renderMenu();
     </script>
 </body>
 </html>
