@@ -1,4 +1,4 @@
-# Restaurant QR Generator
+# Restaurant QR Generator 
 
 Микро-сервис для генерации QR-кодов для меню ресторанов. 
 Быстро, просто и без лишней регистрации.
